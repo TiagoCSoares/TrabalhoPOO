@@ -103,32 +103,6 @@ public class DatabaseUtil {
         }
     }
 
-    /*public static List<Product> getAllProducts() {
-        List<Product> products = new ArrayList<>();
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM product");
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String shortDescription = rs.getString("shortDescription");
-                String brand = rs.getString("brand");
-                String category = rs.getString("category");
-                double listPrice = rs.getDouble("listPrice");
-                double cost = rs.getDouble("cost");
-
-                Product product = new Product(id, name, shortDescription, brand, category, listPrice, cost);
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return products;
-    }*/
-
     public List<Product> getByName(String nameSearching) {
         List<Product> products = new ArrayList<>();
 
@@ -157,6 +131,8 @@ public class DatabaseUtil {
 
         return products;
     }
+
+
 
     public int getTotalProductsCount() {
         int total = 0;

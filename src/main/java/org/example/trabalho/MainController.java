@@ -10,6 +10,7 @@ import org.example.trabalho.database.DatabaseUtil;
 import org.example.trabalho.entities.Product;
 
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -181,35 +182,6 @@ public class MainController implements Initializable {
         }
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        initializeNodes();
-        initializeTableView();
-        messageLabel.setWrapText(true);
-    }
-
-    private void initializeNodes() {
-        tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tableColumnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
-        tableColumnBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        tableColumnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        tableColumnListPrice.setCellValueFactory(new PropertyValueFactory<>("listPrice"));
-        tableColumnCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
-    }
-
-    private void initializeTableView() {
-        tableColumnId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        tableColumnName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-        tableColumnShortDescription.setCellValueFactory(cellData -> cellData.getValue().shortDescriptionProperty());
-        tableColumnBrand.setCellValueFactory(cellData -> cellData.getValue().brandProperty());
-        tableColumnCategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
-        tableColumnListPrice.setCellValueFactory(cellData -> cellData.getValue().listPriceProperty().asObject());
-        tableColumnCost.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
-
-        loadProducts(1);
-    }
-
     public void loadProducts(int page) {
         totalPages = (int) Math.ceil(databaseUtil.getTotalProductsCount() / 10.0);
         if(totalPages == 0) {
@@ -258,6 +230,37 @@ public class MainController implements Initializable {
         actualLoad = "search";
         tableViewProduct.getItems().setAll(observableProductList);
     }
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        initializeNodes();
+        initializeTableView();
+        messageLabel.setWrapText(true);
+    }
+
+    private void initializeNodes() {
+        tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableColumnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
+        tableColumnBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
+        tableColumnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+        tableColumnListPrice.setCellValueFactory(new PropertyValueFactory<>("listPrice"));
+        tableColumnCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
+    }
+
+    private void initializeTableView() {
+        tableColumnId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+        tableColumnName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        tableColumnShortDescription.setCellValueFactory(cellData -> cellData.getValue().shortDescriptionProperty());
+        tableColumnBrand.setCellValueFactory(cellData -> cellData.getValue().brandProperty());
+        tableColumnCategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
+        tableColumnListPrice.setCellValueFactory(cellData -> cellData.getValue().listPriceProperty().asObject());
+        tableColumnCost.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
+
+        loadProducts(1);
+    }
+
 
 
 
