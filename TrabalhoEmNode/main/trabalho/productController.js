@@ -5,21 +5,22 @@ const Product = require('./entities/Product'); // Ajuste o caminho conforme nece
 
 // Rota para listar produtos
 router.get('/products', async (req, res) => {
-  console.log('GET /products called'); // Adicione este log
   try {
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page, 10) || 1;
     const itemsPerPage = 10;
     const totalProducts = await databaseUtil.getTotalProductsCount();
     const totalPages = Math.ceil(totalProducts / itemsPerPage);
     const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalProducts);
 
-    const products = await databaseUtil.getProductsByRange(startIndex, endIndex);
+    console.log('page:', page, 'startIndex:', startIndex, 'itemsPerPage:', itemsPerPage); // Adicionando log para depuração
+
+    const products = await databaseUtil.getProductsByRange(startIndex, itemsPerPage);
     res.json({ products, currentPage: page, totalPages });
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
+
 
 // Rota para criar novo produto
 router.post('/product', async (req, res) => {

@@ -7,19 +7,19 @@ const config = {
     database: 'products'
 };
 
+async function getConnection() {
+    return mysql.createConnection(config);
+}
+
 async function createDatabase() {
     try {
-        const connection = await mysql.createConnection({ host: config.host, user: config.user, password: config.password });
-        await connection.execute(`CREATE DATABASE IF NOT EXISTS ${config.database}`);
+        const connection = await getConnection();
+        await connection.query(`CREATE DATABASE IF NOT EXISTS ${config.database}`);
         console.log("Database created successfully...");
         await connection.end();
     } catch (error) {
         console.error('Error creating database:', error);
     }
-}
-
-async function getConnection() {
-    return mysql.createConnection(config);
 }
 
 async function createTableIfNotExists() {
@@ -78,26 +78,38 @@ async function deleteProduct(product) {
     }
 }
 
-async function getTotalProductsCount() {
+async function getProductsByRange(startIndex, itemsPerPage) {
     try {
+        console.log('startIndex:', startIndex, 'itemsPerPage:', itemsPerPage); // Adicionando log para depuração
         const conn = await getConnection();
-        const [rows] = await conn.execute('SELECT COUNT(*) as count FROM product');
-        await conn.end();
-        return rows[0].count;
-    } catch (error) {
-        console.error('Error fetching total products count:', error);
-        throw error;
-    }
-}
+        // Garantindo que os valores são inteiros
+        startIndex = parseInt(startIndex, 10);
+        itemsPerPage = parseInt(itemsPerPage, 10);
 
-async function getProductsByRange(startIndex, endIndex) {
-    try {
-        const conn = await getConnection();
-        const [rows] = await conn.execute('SELECT * FROM product LIMIT ?, ?', [startIndex, endIndex - startIndex]);
+        // Modificando a maneira como os parâmetros são passados à query
+        const sql = `SELECT * FROM product LIMIT ${startIndex}, ${itemsPerPage}`;
+
+        const [rows] = await conn.execute(sql); // Removendo os placeholders
         await conn.end();
         return rows;
     } catch (error) {
         console.error('Error fetching products by range:', error);
+        throw error;
+    }
+}
+
+
+
+
+async function getTotalProductsCount() {
+    try {
+        const conn = await getConnection();
+        const sql = 'SELECT COUNT(*) AS total FROM product';
+        const [rows] = await conn.execute(sql);
+        await conn.end();
+        return rows[0].total;
+    } catch (error) {
+        console.error('Error getting total products count:', error);
         throw error;
     }
 }
@@ -108,6 +120,6 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
-    getTotalProductsCount,
-    getProductsByRange
+    getProductsByRange,
+    getTotalProductsCount
 };
