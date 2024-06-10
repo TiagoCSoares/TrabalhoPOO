@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignorar a pasta node_modules
+TrabalhoEmNode/node_modules/
