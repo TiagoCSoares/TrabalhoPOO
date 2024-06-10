@@ -15,6 +15,13 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
     DatabaseUtil databaseUtil = new DatabaseUtil();
+    ObservableList<Product> observableProductList = null;
+    int totalPages = 1;
+    int currentPage = 1;
+    int itemsPerPage = 10;
+    int startIndex;
+    int endIndex;
+    String actualLoad = "all";
 
     @FXML
     private TableView<Product> tableViewProduct;
@@ -60,11 +67,8 @@ public class MainController implements Initializable {
 
     @FXML
     private Label messageLabel;
-
     @FXML
-    public void onSearchButtonAction() {
-        System.out.println("onSearchButtonAction");
-    }
+    private Label currentPageLabel;
 
     @FXML
     public void createNewProduct() {
@@ -86,7 +90,8 @@ public class MainController implements Initializable {
             Product product = new Product(name, shortDescription, brand, category, listPrice, cost);
 
             databaseUtil.createProduct(product);
-            atualizarTableView();
+            //atualizarTableView();
+            loadProducts(currentPage);
             messageLabel.setText("");
         } catch (NumberFormatException e) {
             messageLabel.setText("List Price and Cost must be valid numbers.");
@@ -147,15 +152,40 @@ public class MainController implements Initializable {
     }
 
     public void atualizarTableView() {
-        List<Product> productList = DatabaseUtil.getProducts();
-        ObservableList<Product> observableProductList = FXCollections.observableArrayList(productList);
-        tableViewProduct.setItems(observableProductList);
+        if(actualLoad.equals("all"))
+            loadProducts(currentPage);
+        else
+            searchProduct();
+    }
+    @FXML
+    public void searchProduct() {
+        String name = textFieldSearch.getText();
+        List<Product> productList = databaseUtil.getByName(name);
+        observableProductList = FXCollections.observableArrayList(productList);
+        loadProductsByName(observableProductList);
+    }
+
+    @FXML
+    public void previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            atualizarTableView();
+        }
+    }
+
+    @FXML
+    public void nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            atualizarTableView();
+        }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeNodes();
         initializeTableView();
+        messageLabel.setWrapText(true);
     }
 
     private void initializeNodes() {
@@ -177,7 +207,56 @@ public class MainController implements Initializable {
         tableColumnListPrice.setCellValueFactory(cellData -> cellData.getValue().listPriceProperty().asObject());
         tableColumnCost.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
 
-        tableViewProduct.getItems().addAll(DatabaseUtil.getProducts());
+        loadProducts(1);
+    }
+
+    public void loadProducts(int page) {
+        totalPages = (int) Math.ceil(databaseUtil.getTotalProductsCount() / 10.0);
+        if(totalPages == 0) {
+            currentPageLabel.setText("No results found.");
+            return;
+        }
+
+        // Verifica se a página atual está fora do intervalo total de páginas
+        if (page < 1) {
+            page = 1;
+        } else if (page > totalPages) {
+            page = totalPages;
+        }
+
+        currentPageLabel.setText("Page " + page + " of " + totalPages);
+
+        startIndex = (page - 1) * itemsPerPage;
+        endIndex = Math.min(startIndex + itemsPerPage, databaseUtil.getTotalProductsCount());
+
+        List<Product> products = databaseUtil.getProductsByRange(startIndex, endIndex);
+        observableProductList = FXCollections.observableArrayList(products);
+        actualLoad = "all";
+        tableViewProduct.getItems().setAll(observableProductList);
+    }
+
+    public void loadProductsByName(ObservableList<Product> observableProductList) {
+        if (observableProductList.isEmpty()) {
+            tableViewProduct.getItems().clear();
+            currentPageLabel.setText("No results found.");
+            return;
+        }
+
+        totalPages = (int) Math.ceil(observableProductList.size() / 10.0);
+
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+
+        currentPageLabel.setText("Page " + currentPage + " of " + totalPages);
+
+        startIndex = (currentPage - 1) * itemsPerPage;
+        endIndex = Math.min(startIndex + itemsPerPage, observableProductList.size());
+
+        List<Product>  products = observableProductList.subList(startIndex, endIndex);
+        observableProductList = FXCollections.observableArrayList(products);
+        actualLoad = "search";
+        tableViewProduct.getItems().setAll(observableProductList);
     }
 
 

@@ -96,11 +96,18 @@
                               <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteProduct" text="Delete" GridPane.columnIndex="2" />
                            </children>
                         </GridPane>
-                        <Label fx:id="messageLabel" textFill="#eb0000">
+                        <VBox prefHeight="40.0" prefWidth="249.0">
                            <FlowPane.margin>
-                              <Insets left="40.0" top="20.0" />
+                              <Insets left="10.0" top="20.0" />
                            </FlowPane.margin>
-                        </Label>
+                           <children>
+                              <Label fx:id="messageLabel" textFill="#eb0000">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </VBox>
                           </children>
                       </FlowPane>
                       <FlowPane prefHeight="380.0" prefWidth="320.0">
@@ -117,7 +124,7 @@
                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                   </rowConstraints>
                                   <children>
-                                      <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonAction" text="Search" GridPane.columnIndex="1">
+                                      <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchProduct" text="Search" GridPane.columnIndex="1">
                                           <GridPane.margin>
                                               <Insets left="30.0" />
                                           </GridPane.margin>
@@ -129,7 +136,7 @@
                                       </TextField>
                                   </children>
                               </GridPane>
-                              <TableView fx:id="tableViewProduct" prefHeight="283.0" prefWidth="311.0">
+                              <TableView fx:id="tableViewProduct" prefHeight="276.0" prefWidth="311.0">
                                   <columns>
                                       <TableColumn fx:id="tableColumnId" prefWidth="44.0" text="Id" />
                                       <TableColumn fx:id="tableColumnName" prefWidth="44.0" text="Name" />
@@ -140,6 +147,24 @@
                                       <TableColumn fx:id="tableColumnCost" prefWidth="44.0" text="Cost" />
                                   </columns>
                               </TableView>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="52.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="202.0" minWidth="10.0" prefWidth="191.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="93.0" minWidth="10.0" prefWidth="57.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <FlowPane.margin>
+                              <Insets left="10.0" top="20.0" />
+                           </FlowPane.margin>
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#previousPage" text="&lt;&lt;&lt;" />
+                              <Button mnemonicParsing="false" onAction="#nextPage" text="&gt;&gt;&gt;" GridPane.columnIndex="2" />
+                              <Label fx:id="currentPageLabel" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
                           </children>
                       </FlowPane>
                   </children>

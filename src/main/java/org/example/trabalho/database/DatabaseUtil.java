@@ -103,7 +103,7 @@ public class DatabaseUtil {
         }
     }
 
-    public static List<Product> getProducts() {
+    /*public static List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
 
         try (Connection conn = getConnection();
@@ -127,5 +127,83 @@ public class DatabaseUtil {
         }
 
         return products;
+    }*/
+
+    public List<Product> getByName(String nameSearching) {
+        List<Product> products = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM product");
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                if (!rs.getString("name").contains(nameSearching)) {
+                    continue;
+                }
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String shortDescription = rs.getString("shortDescription");
+                String brand = rs.getString("brand");
+                String category = rs.getString("category");
+                double listPrice = rs.getDouble("listPrice");
+                double cost = rs.getDouble("cost");
+
+                Product product = new Product(id, name, shortDescription, brand, category, listPrice, cost);
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return products;
     }
+
+    public int getTotalProductsCount() {
+        int total = 0;
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM product");
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            return total;
+        }
+    }
+
+    public List<Product> getProductsByRange(int startIndex, int endIndex) {
+        List<Product> products = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM product LIMIT ?, ?");
+        ) {
+
+            pstmt.setInt(1, startIndex);
+            pstmt.setInt(2, endIndex);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String shortDescription = rs.getString("shortDescription");
+                    String brand = rs.getString("brand");
+                    String category = rs.getString("category");
+                    double listPrice = rs.getDouble("listPrice");
+                    double cost = rs.getDouble("cost");
+
+                    Product product = new Product(id, name, shortDescription, brand, category, listPrice, cost);
+                    products.add(product);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
 }
